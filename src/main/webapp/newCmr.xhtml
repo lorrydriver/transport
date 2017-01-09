@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	<title>Facelet Title</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+</h:head>
+<h:body>
+	<ui:composition template="layout.xhtml">
+
+		<ui:define name="content">
+			<h:form prependId="false" id="eingabeForm">
+				<h:panelGrid columns="2" cellpadding="5">
+					<p:outputLabel for="absender" value="Absender:" />
+					<p:autoComplete id="absender" dropdown="true"
+						value="#{newCmr.cmr.absender}" completeMethod="#{newCmr.complete}"
+						required="true" 
+						var="cmrAbsender" itemLabel="#{cmrAbsender.displayString}" itemValue="#{cmrAbsender.id}" converter="CmrAnschriftConverter">
+							<p:ajax event="itemSelect" listener="#{newCmr.onItemSelectAbsender}" update="beladungsOrtPlz" />
+						</p:autoComplete>
+					<p:outputLabel for="printSignature" value="Drucken f&uuml;r Unterschrift:" />
+					<p:selectBooleanCheckbox id="printSignature" value="#{newCmr.cmr.printAbsenderForUnterschrift}"></p:selectBooleanCheckbox>
+					<p:outputLabel for="empfaenger" value="Empf&auml;nger:" />
+					<p:autoComplete id="empfaenger" dropdown="true"
+						value="#{newCmr.cmr.empfaenger}"
+						completeMethod="#{newCmr.complete}" required="true" 
+						var="cmrAnschrift" itemLabel="#{cmrAnschrift.displayString}" itemValue="#{cmrAnschrift.id}" converter="CmrAnschriftConverter"  >
+						<p:ajax event="itemSelect" listener="#{newCmr.onItemSelectEmpfaenger}" update="entladungsOrtPlz" />
+						</p:autoComplete>
+					
+					<p:outputLabel for="entladungsOrtPlz" value="Entladeort-PLZ:" />
+					<p:inputText id="entladungsOrtPlz"
+						value="#{newCmr.cmr.entladungsOrtPlz}" required="true" />
+						
+					<p:outputLabel for="entladungsOrtLand" value="Entladeort-Land:" />
+					<p:inputText id="entladungsOrtLand"
+						value="#{newCmr.cmr.entladungsOrtLand}" required="true" />
+						
+					<p:outputLabel for="beladungsDatum" value="Beladeort-Datum:" />
+					<p:inputText id="beladungsDatum"
+						value="#{newCmr.cmr.beladungsDatum}" required="true" />
+						
+					<p:outputLabel for="beladungsOrtPlz" value="Beladeort-PLZ:" />
+					<p:inputText id="beladungsOrtPlz"
+						value="#{newCmr.cmr.beladungsOrtPlz}" required="true" />
+						
+					<p:outputLabel for="beladungsOrtLand" value="Beladeort-Land:" />
+					<p:inputText id="beladungsOrtLand"
+						value="#{newCmr.cmr.beladungsOrtLand}" required="true" />
+						
+					<p:outputLabel for="kfzLkw" value="KFZ-LKW:" />
+					<p:inputText id="kfzLkw"
+						value="#{newCmr.cmr.kfzLkw}" required="true" />	
+					
+					<p:outputLabel for="kfzAnhaenger" value="KFZ-Anh&auml;er:" />
+					<p:inputText id="kfzAnhaenger"
+						value="#{newCmr.cmr.kfzAnhaenger}" required="true" />	
+																																																							
+					<p:outputLabel for="ladungGewicht" value="Ladunggewicht:" />
+					<p:inputText id="ladungGewicht"
+						value="#{newCmr.cmr.ladungGewicht}" required="false" />		
+					
+					<p:outputLabel for="ladungEinheit" value="Ladungeinheit:" />
+					<p:inputText id="ladungEinheit"
+						value="#{newCmr.cmr.ladungEinheit}" required="false" />		
+						
+					<p:outputLabel for="ladungText" value="Ladungtext:" />
+					<p:inputTextarea id="ladungText"
+						value="#{newCmr.cmr.ladungText}" required="true" />	
+						
+					<p:outputLabel for="abfertigungsOrt" value="Abfertigungsort:" />
+					<p:inputText id="abfertigungsOrt"
+						value="#{newCmr.cmr.abfertigungsOrt}" required="false" />	
+						
+					<p:outputLabel for="abfertigungsDatum" value="Abfertigungsdatum:" />
+					<p:inputText id="abfertigungsDatum"
+						value="#{newCmr.cmr.abfertigungsDatum}" required="false" />																										
+											
+				<p:commandButton value="Save" action="#{newCmr.save}" update="cmrs"
+						 />
+				</h:panelGrid>
+			</h:form>
+			<h:form prependId="false" id = "listFrom" >
+				<p:dataList value="#{newCmr.allCmr}" var="cmr" type="ordered"
+					id="cmrs">
+					<f:facet name="header">
+                    Cmrs
+                </f:facet>
+              <p:outputLabel value= "Von: #{cmr.absender.line1} zu #{cmr.empfaenger.line1}, am #{cmr.abfertigungsDatum}, Ladung: #{cmr.ladungText}"/>
+			  <p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+			        <p:fileDownload value="#{newCmr.exportCmr(cmr)}" />
+			    </p:commandButton>                
+               <!--  <p:commandButton value="Edit" action="#{newCmr.edit(cmr)}" update="eingabeForm" /> -->
+               <p:commandButton value="L&ouml;schen" action="#{newCmr.delete(cmr)}" update="listFrom" />
+            </p:dataList>
+            </h:form>
+            <script type="text/javascript">
+function start() {
+    PF('statusDialog').show();
+}
+ 
+function stop() {
+    PF('statusDialog').hide();
+}
+</script>
+	
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>
+
