@@ -4,15 +4,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import at.ko.transport.business.cmr.entity.CmrAnschrift;
+
 @Entity
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@NamedQuery(name = RechnungsAnschrift.findAll, query = "SELECT t FROM RechnungsAnschrift t WHERE t.aktiv = true")
 public class RechnungsAnschrift {
 
+	static final String PREFIX = "rechnung.entity.RechnungsAnschrift.";
+	public static final String findAll = PREFIX + "findAll";
 	@Id
 	@GeneratedValue
 	@Column(name = "ID")
@@ -22,6 +28,18 @@ public class RechnungsAnschrift {
 	private String line2;
 	private String line3;
 	private String line4;
+	
+	private boolean aktiv;
+	
+	
+
+	public boolean isAktiv() {
+		return aktiv;
+	}
+
+	public void setAktiv(boolean aktiv) {
+		this.aktiv = aktiv;
+	}
 
 	public Long getId() {
 		return id;
@@ -62,5 +80,11 @@ public class RechnungsAnschrift {
 	public void setLine4(String line4) {
 		this.line4 = line4;
 	}
+	
+	public String getDisplayString() {
+		String seperator = ",";
+		return line1+seperator+line2+seperator+line3+seperator+line4;
+	}
+
 
 }

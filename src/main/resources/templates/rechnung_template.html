@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>A simple, clean, and responsive HTML invoice template</title>
+
+<style>
+body {
+
+}
+.invoice-box {
+	max-width: 800px;
+	margin: auto;
+	padding: 30px;
+	border: 1px solid #eee;
+	box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+	font-size: 16px;
+	line-height: 24px;
+	font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+	color: #555;
+}
+
+ div.divFooter {
+    position: fixed;
+    bottom: 0;
+  }
+@media print {
+.invoice-box  {
+	border: none;
+	box-shadow: none;
+}
+ div.divFooter {
+    position: fixed;
+    bottom: 0;
+  }
+}
+.invoice-box table {
+	width: 100%;
+	line-height: inherit;
+	text-align: left;
+}
+
+.invoice-box table td {
+	padding: 5px;
+	vertical-align: top;
+}
+
+.invoice-box table tr td:nth-child(4) {
+	text-align: right;
+}
+.invoice-box table tr td:nth-child(3) {
+	text-align: center;
+}
+.invoice-box table tr td:nth-child(2) {
+	text-align: right;
+}
+
+.invoice-box table tr.top table td {
+	padding-bottom: 20px;
+}
+
+.invoice-box table tr.top table td.title {
+	font-size: 45px;
+	line-height: 45px;
+	color: #333;
+}
+
+.invoice-box table tr.information table td {
+	padding-bottom: 40px;
+}
+
+.invoice-box table tr.heading td {
+	background: #eee;
+	border-bottom: 1px solid #ddd;
+	font-weight: bold;
+}
+
+.invoice-box table tr.details td {
+	padding-bottom: 20px;
+}
+
+.invoice-box table tr.item td {
+	border-bottom: 1px solid #eee;
+}
+
+.invoice-box table tr.item.last td {
+	border-bottom: none;
+}
+
+.invoice-box table tr.total td:nth-child(3) {
+	border-top: 2px solid #eee;
+	font-weight: bold;
+}
+
+.invoice-box table tr.total td:nth-child(4) {
+	border-top: 2px solid #eee;
+	font-weight: bold;
+}
+
+@media only screen and (max-width: 600px) {
+	.invoice-box table tr.top table td {
+		width: 100%;
+		display: block;
+		text-align: center;
+	}
+	.invoice-box table tr.information table td {
+		width: 100%;
+		display: block;
+		text-align: center;
+	}
+}
+</style>
+</head>
+
+<body>
+	<div class="invoice-box">
+		<table cellpadding="0" cellspacing="0">
+		<tr class="top" >
+				<td colspan="4">
+					<table style="margin-bottom: -40px;">
+						<tr>
+						<td class="title"><img
+								src="./png/logo.png"
+								style="width: 100%; max-width: 300px;"></td>
+							<td/>
+							
+							<td colspan="2" style="text-align: right;line-height: 110%;">Johann Kotzina<br>Taubitz 15
+							<br>3522 Lichtenau
+							<p style="font-size: 12px;">
+							Tel. & Fax. 02718/392
+							<br>Mobil: 0664/3082884
+							<br>kotzina@a1.net www.kotzina.at
+							</p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr class="information">
+				<td colspan="4">
+					<table>
+						<tr>
+							<td>$rechnung.anschrift.line1<br>
+							 $rechnung.anschrift.line2<br>
+							 $rechnung.anschrift.line3<br>
+							 $rechnung.anschrift.line4<br>
+							</td>
+							<td/>
+							<td/>
+							<td>Rechung #: $rechnung.rechnugsId<br> Datum: $rechnung.rechnungsdatum<br>
+								Fällig am: $rechnung.faelligAm
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+
+			
+
+
+			<tr class="heading">
+				<td>Beschreibung</td>
+
+				<td>Menge</td>
+				<td>Satz</td>
+				<td>Betrag</td>
+			</tr>
+           #foreach ( $item in $rechnung.rechnungsZeile )
+			<tr class="item">
+				<td>$item.beschreibung
+				</td>
+
+				<td>$item.menge</td>
+				<td>$item.satz</td>
+				<td>$item.betrag</td>
+			</tr>
+			#end
+
+			<tr class="item last">
+				<td></td>
+				<td></td>
+				<td>Zwischensumme:</td>
+
+				<td>$rechnung.zwischensumme</td>
+			</tr>
+			<tr class="item last">
+				<td></td>
+				<td></td>
+				<td>Steuersatz:</td>
+
+				<td>20%</td>
+			</tr>
+			<tr class="item last">
+				<td></td>
+				<td></td>
+				<td>Umsatzsteuer:</td>
+				<td>$rechnung.ust</td>
+			</tr>
+
+			<tr class="total">
+				<td></td>
+				<td></td>
+				<td>Gesamt:</td>
+
+				<td>$rechnung.gesamtSumme</td>
+			</tr>
+		</table>
+			   <div class="divFooter">
+	   VIELEN DANK FÜR IHREN AUFTRAG!<br/>
+	   Raiffeisenbank Region Waldviertel Mitte
+Kontonummer: 2  420 107	BLZ:  32990
+BIC: RLNWATWWZWE	IBAN: AT23 3299 0000 0242  0107  
+UID Nr.: ATU 52112100 
+
+    </div>
+	</div>
+
+</body>
+</html>

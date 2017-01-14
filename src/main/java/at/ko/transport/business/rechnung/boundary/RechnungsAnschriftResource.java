@@ -22,11 +22,11 @@ import at.ko.transport.business.rechnung.entity.RechnungsAnschrift;
 public class RechnungsAnschriftResource {
 
 		@Inject
-		RechnungsManager manager;
+		RechnungsAnschriftManager manager;
 
 		@POST
 		public Response save(RechnungsAnschrift rechnungsAnschrift, @Context UriInfo info) {
-			CmrAnschrift saved = this.manager.save(rechnungsAnschrift);
+			RechnungsAnschrift saved = this.manager.save(rechnungsAnschrift);
 	        long id = saved.getId();
 	        URI uri = info.getAbsolutePathBuilder().path("/" + id).build();
 	        return Response.created(uri).build();

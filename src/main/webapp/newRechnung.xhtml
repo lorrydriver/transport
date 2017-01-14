@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	<title>Facelet Title</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+</h:head>
+<h:body>
+	<ui:composition template="layout.xhtml">
+
+		<ui:define name="content">
+			<h:form prependId="false" id="eingabeForm">
+				<p:layout style="min-width:400px;min-height:400px;">
+					<p:layoutUnit position="north">
+						<p:outputLabel for="absender" value="Absender:" />
+						<p:autoComplete id="absender" dropdown="true"
+							value="#{newRechnung.rechnung.anschrift}"
+							completeMethod="#{newRechnung.complete}" required="false"
+							var="cmrAbsender" itemLabel="#{cmrAbsender.displayString}"
+							itemValue="#{cmrAbsender.id}"
+							converter="RechnungAnschriftConverter">
+
+						</p:autoComplete>
+
+					</p:layoutUnit>
+
+					<p:layoutUnit position="west" resizable="true" size="150"
+						minSize="40" maxSize="150">
+
+						<p:commandButton value="Zeile"
+							icon="ui-icon-plus">
+						</p:commandButton>
+
+					</p:layoutUnit>
+
+					<p:layoutUnit position="center">
+
+						<p:dataTable var="rechnungline" id="table"
+							value="#{newRechnung.rechnung.rechnungsZeile}">
+							<p:column headerText="Beschreibung">
+								<h:outputText value="#{rechnungline.beschreibung}" />
+							</p:column>
+
+							<p:column headerText="Menge">
+								<h:outputText value="#{rechnungline.menge}" />
+							</p:column>
+
+							<p:column headerText="Satz">
+								<h:outputText value="#{rechnungline.satz}" />
+							</p:column>
+
+							<p:column headerText="Betrag">
+								<h:outputText value="#{rechnungline.menge * rechnungline.satz}" />
+							</p:column>
+							
+							<p:column headerText="Bearbeiten">
+								<p:commandButton  icon="ui-icon-trash" actionListener="#{newRechnung.removeZeile(rechnungline)}"
+								udate="table" />
+							</p:column>
+						</p:dataTable>
+		                 <p:commandButton value="Neue Zeile" type="button" onclick="PF('dlg2').show();" />				
+						<p:commandButton value="Von Cmr" type="button" onclick="PF('dlg2').show();" />	
+					</p:layoutUnit>
+				</p:layout>
+				<p:commandButton  icon="ui-icon-disk" value="Speichern" actionListener="#{newRechnung.save()}"
+								udate="table" />
+				<p:commandButton  icon="ui-icon-alert" value="Zurücksetzen" actionListener="#{newRechnung.reset()}"
+								udate="table" />
+				<p:commandButton value="Drucken" action="#{newRechnung.downloadFile}" />
+			</h:form>
+			 <h:form>
+			<p:dialog header="Neue Zeile" widgetVar="dlg2"  height="400">				
+	<h:panelGrid columns="2" cellpadding="5" id="zeileDialog">
+						<p:outputLabel for="menge" value="Menge"/>
+						<p:inputText id ="menge" label="Menge" value="#{newRechnung.menge}"></p:inputText>
+						<p:outputLabel for="satz" value="Satz"/>
+						<p:inputText id="satz" label="Satz" value="#{newRechnung.satz}" ></p:inputText>
+						<p:outputLabel for="beschreibung" value="Beschreibung" />
+						<p:inputTextarea id ="beschreibung" rows="3" cols="46" value="#{newRechnung.beschreibung}"/>
+						<p:commandButton icon="ui-icon-plus" id="zeile" update="table,zeileDialog" actionListener="#{newRechnung.addZeile()}" />
+						</h:panelGrid>
+  </p:dialog>
+  </h:form>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>
+

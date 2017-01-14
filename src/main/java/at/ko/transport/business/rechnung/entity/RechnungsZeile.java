@@ -20,6 +20,10 @@ public class RechnungsZeile {
 	private String beschreibung;
 	private Double menge;
 	private Double satz;
+	
+	public Double getBetrag() {
+		return menge*satz;
+	}
 
 	public Long getId() {
 		return id;
