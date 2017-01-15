@@ -102,6 +102,5 @@ public class Rechnung {
 	public void setFaelligAm(Date faelligAm) {
 		this.faelligAm = faelligAm;
 	}
-	
 
 }

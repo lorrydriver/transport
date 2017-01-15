@@ -142,16 +142,13 @@ body {
 						<tr>
 							<td>$rechnung.anschrift.line1<br>
 							 $rechnung.anschrift.line2<br>
-							 $rechnung.anschrift.line3
-							 #if($rechnung.anschrift.line4)
-							 <br>
+							 $rechnung.anschrift.line3<br>
 							 $rechnung.anschrift.line4<br>
-							 #end
 							</td>
 							<td/>
 							<td/>
-							<td>Rechung #: 2017- $rechnung.rechnugsId<br> Datum: $rechnungsdatum<br>
-								F&uuml;llig am: $rechnungsdatum
+							<td>Rechung #: $rechnung.rechnugsId<br> Datum: $rechnung.rechnungsdatum<br>
+								Fällig am: $rechnung.faelligAm
 							</td>
 						</tr>
 					</table>
@@ -173,9 +170,9 @@ body {
 				<td>$item.beschreibung
 				</td>
 
-				<td>${nf.format($item.menge)}</td>
-				<td>${euronf.format($item.satz)}</td>
-				<td>${euronf.format($item.betrag)}</td>
+				<td>$item.menge</td>
+				<td>$item.satz</td>
+				<td>$item.betrag</td>
 			</tr>
 			#end
 
@@ -184,7 +181,7 @@ body {
 				<td></td>
 				<td>Zwischensumme:</td>
 
-				<td>${euronf.format($rechnung.zwischensumme)}</td>
+				<td>$rechnung.zwischensumme</td>
 			</tr>
 			<tr class="item last">
 				<td></td>
@@ -197,7 +194,7 @@ body {
 				<td></td>
 				<td></td>
 				<td>Umsatzsteuer:</td>
-				<td>${euronf.format($rechnung.ust)}</td>
+				<td>$rechnung.ust</td>
 			</tr>
 
 			<tr class="total">
@@ -205,11 +202,11 @@ body {
 				<td></td>
 				<td>Gesamt:</td>
 
-				<td>${euronf.format($rechnung.gesamtSumme)}</td>
+				<td>$rechnung.gesamtSumme</td>
 			</tr>
 		</table>
 			   <div class="divFooter">
-	   VIELEN DANK F&Uuml;R IHREN AUFTRAG!<br/>
+	   VIELEN DANK FÜR IHREN AUFTRAG!<br/>
 	   Raiffeisenbank Region Waldviertel Mitte
 Kontonummer: 2  420 107	BLZ:  32990
 BIC: RLNWATWWZWE	IBAN: AT23 3299 0000 0242  0107  

@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +22,8 @@ import javax.inject.Named;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import at.ko.transport.business.cmr.boundary.CmrManager;
+import at.ko.transport.business.cmr.entity.Cmr;
 import at.ko.transport.business.rechnung.boundary.RechnungsAnschriftManager;
 import at.ko.transport.business.rechnung.boundary.RechnungsPrinter;
 import at.ko.transport.business.rechnung.boundary.RechungsManager;
@@ -38,12 +44,16 @@ public class NewRechnung implements Serializable {
 	@Inject
 	RechungsManager rechungsManager;
 	
+	@Inject
+	CmrManager cmrManager;
+	
 	private String beschreibung;
 	private Double menge;
 	private Double satz;
 	
 	Rechnung rechnung;
 	List<RechnungsAnschrift> allAnschrift;
+	private String print;
 	
 	@PostConstruct
 	public void init() {
@@ -55,6 +65,10 @@ public class NewRechnung implements Serializable {
 		this.rechnung = new Rechnung();
 		this.rechnung.setRechnungsZeile(new ArrayList<>());
 		this.rechnung.setRechnungsdatum(new Date());
+		this.rechnung.setFaelligAm(Date.from(LocalDate.now().plus(1, ChronoUnit.MONTHS).atStartOfDay()
+				.atZone(ZoneId.systemDefault()).toInstant()));
+		
+		this.print = null;
 	}
 	
 	public void save() {
@@ -108,6 +122,10 @@ public class NewRechnung implements Serializable {
 		this.satz = satz;
 	}
 	
+	public String getPrint() {
+		return this.print;
+	}
+	
 	public void addZeile() {
 		RechnungsZeile zeile = new RechnungsZeile();
 		zeile.setMenge(menge);
@@ -123,29 +141,38 @@ public class NewRechnung implements Serializable {
 		rechnung.getRechnungsZeile().remove(zeile);
 	} 
 	
-	public void downloadFile() {
+	public String downloadFile() {
 
 		HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext()
 				.getResponse();
 		String print = new RechnungsPrinter(rechnung).print();
-		response.setContentLength((int) print.length());
-		ServletOutputStream out = null;
-		try {
-			out = response.getOutputStream();
-			out.write(print.getBytes());
-			out.flush();
-			FacesContext.getCurrentInstance().getResponseComplete();
-		} catch (IOException err) {
-			err.printStackTrace();
-		} finally {
-			try {
-				if (out != null) {
-					out.close();
-				}
-			} catch (IOException err) {
-				err.printStackTrace();
-			}
-		}
-
+		this.print = print;
+//		ServletOutputStream out = null;
+//		try {
+//			out = response.getOutputStream();
+//			out.write(print.getBytes());
+//			out.flush();
+//			FacesContext.getCurrentInstance().getResponseComplete();
+//		} catch (IOException err) {
+//			err.printStackTrace();
+//		} finally {
+//			try {
+//				if (out != null) {
+//					out.close();
+//				}
+//			} catch (IOException err) {
+//				err.printStackTrace();
+//			}
+//		}
+		return "rechnungPrint";
 	}
+	
+	public List<Cmr> getAllCmr() {
+		return cmrManager.all();
+	}
+	
+	public void setCmrText(Cmr cmr) {
+		this.beschreibung = cmr.getLadungText();
+	}
+	
 }

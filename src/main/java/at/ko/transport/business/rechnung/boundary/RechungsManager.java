@@ -6,6 +6,7 @@ import javax.persistence.PersistenceContext;
 import javax.inject.Inject;
 
 import at.ko.transport.business.rechnung.entity.Rechnung;
+import at.ko.transport.business.rechnung.entity.RechnungsZeile;
 
 @Stateless
 public class RechungsManager {
@@ -14,7 +15,10 @@ public class RechungsManager {
 	private EntityManager em;
 	
 	public void save(Rechnung rechnung) {
-		em.merge(rechnung);
+		for(RechnungsZeile zeile : rechnung.getRechnungsZeile()) {
+			em.persist(zeile);
+		}
+		em.persist(rechnung);
 	}
 
 }

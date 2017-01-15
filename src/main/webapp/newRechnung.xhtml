@@ -22,7 +22,8 @@
 						<p:autoComplete id="absender" dropdown="true"
 							value="#{newRechnung.rechnung.anschrift}"
 							completeMethod="#{newRechnung.complete}" required="false"
-							var="cmrAbsender" itemLabel="#{cmrAbsender.displayString}"
+							var="cmrAbsender" 
+							itemLabel="#{cmrAbsender.displayString}"
 							itemValue="#{cmrAbsender.id}"
 							converter="RechnungAnschriftConverter">
 
@@ -70,9 +71,9 @@
 				</p:layout>
 				<p:commandButton  icon="ui-icon-disk" value="Speichern" actionListener="#{newRechnung.save()}"
 								udate="table" />
-				<p:commandButton  icon="ui-icon-alert" value="Zurücksetzen" actionListener="#{newRechnung.reset()}"
+				<p:commandButton  icon="ui-icon-alert" value="Zurücksetzen" ajax="false" actionListener="#{newRechnung.reset()}"
 								udate="table" />
-				<p:commandButton value="Drucken" action="#{newRechnung.downloadFile}" />
+
 			</h:form>
 			 <h:form>
 			<p:dialog header="Neue Zeile" widgetVar="dlg2"  height="400">				
@@ -84,10 +85,23 @@
 						<p:outputLabel for="beschreibung" value="Beschreibung" />
 						<p:inputTextarea id ="beschreibung" rows="3" cols="46" value="#{newRechnung.beschreibung}"/>
 						<p:commandButton icon="ui-icon-plus" id="zeile" update="table,zeileDialog" actionListener="#{newRechnung.addZeile()}" />
+						
+    <p:dataList value="#{newRechnung.getAllCmr()}" var="cmr" type="unordered" itemType="none" paginator="true" rows="10" styleClass="paginated">
+        <f:facet name="header">
+            CMR
+        </f:facet>
+        <h:outputText value="#{cmr.ladungText}" style="display:inline-block"/>
+        <h:commandButton action="#{newRechnung.setCmrText(cmr)}" ajax="true" value="+" update="beschreibung" />
+    </p:dataList>						
+						
 						</h:panelGrid>
   </p:dialog>
   </h:form>
+  										<h:form target="_blank">
+				<p:commandButton ajax="false" value="Drucken" action="#{newRechnung.downloadFile()}" />
+				</h:form>
 		</ui:define>
+
 	</ui:composition>
 
 </h:body>
