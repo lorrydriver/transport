@@ -28,6 +28,8 @@ public class Rechnung {
 	@GeneratedValue
 	@Column(name = "ID")
 	private Long rechnugsId;
+	
+	private String rechnungsNummer;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ANSCHRIFT_ID")
@@ -102,5 +104,14 @@ public class Rechnung {
 	public void setFaelligAm(Date faelligAm) {
 		this.faelligAm = faelligAm;
 	}
+
+	public String getRechnungsNummer() {
+		return rechnungsNummer;
+	}
+
+	public void setRechnungsNummer(String rechnungsNummer) {
+		this.rechnungsNummer = rechnungsNummer;
+	}
+	
 
 }

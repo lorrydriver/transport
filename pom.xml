@@ -94,7 +94,7 @@
 		<configuration>
 		   <archive>
 		      <manifestEntries>
-		         <Dependencies>org.apache.velocity</Dependencies>
+		         <Dependencies>org.apache.velocity, org.apache.commons.lang</Dependencies>
 		      </manifestEntries>
 		   </archive>
 		</configuration>

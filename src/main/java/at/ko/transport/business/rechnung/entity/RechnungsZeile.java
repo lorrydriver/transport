@@ -21,6 +21,8 @@ public class RechnungsZeile {
 	private Double menge;
 	private Double satz;
 	
+	private long cmrId;
+	
 	public Double getBetrag() {
 		return menge*satz;
 	}
@@ -55,6 +57,14 @@ public class RechnungsZeile {
 
 	public void setSatz(Double satz) {
 		this.satz = satz;
+	}
+
+	public long getCmrId() {
+		return cmrId;
+	}
+
+	public void setCmrId(long cmrId) {
+		this.cmrId = cmrId;
 	}
 
 }

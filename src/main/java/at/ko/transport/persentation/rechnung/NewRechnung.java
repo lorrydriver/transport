@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
@@ -21,6 +24,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.NumberFormatter;
+
+import org.apache.commons.lang.StringUtils;
 
 import at.ko.transport.business.cmr.boundary.CmrManager;
 import at.ko.transport.business.cmr.entity.Cmr;
@@ -43,18 +49,19 @@ public class NewRechnung implements Serializable {
 	RechnungsAnschriftManager anschriftManager;
 	@Inject
 	RechungsManager rechungsManager;
-	
+
 	@Inject
 	CmrManager cmrManager;
-	
+
 	private String beschreibung;
 	private Double menge;
 	private Double satz;
-	
+
 	Rechnung rechnung;
 	List<RechnungsAnschrift> allAnschrift;
 	private String print;
-	
+	private long rechungsZeileCmr;
+
 	@PostConstruct
 	public void init() {
 		reset();
@@ -65,14 +72,20 @@ public class NewRechnung implements Serializable {
 		this.rechnung = new Rechnung();
 		this.rechnung.setRechnungsZeile(new ArrayList<>());
 		this.rechnung.setRechnungsdatum(new Date());
-		this.rechnung.setFaelligAm(Date.from(LocalDate.now().plus(1, ChronoUnit.MONTHS).atStartOfDay()
-				.atZone(ZoneId.systemDefault()).toInstant()));
-		
+		this.rechnung.setFaelligAm(Date.from(
+				LocalDate.now().plus(1, ChronoUnit.MONTHS).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+		this.beschreibung = "T.P. am ";
 		this.print = null;
+		String rechungsNummerprefix = new SimpleDateFormat("yy").format(this.rechnung.getRechnungsdatum());
+		String rechnungsNummer = new DecimalFormat("000")
+				.format(rechungsManager.calcRechnungsnummer(rechungsNummerprefix));
+		this.rechnung.setRechnungsNummer(
+				rechungsNummerprefix + "-" + rechnungsNummer);
 	}
-	
+
 	public void save() {
 		this.rechungsManager.save(this.rechnung);
+		downloadFile();
 	}
 
 	public Rechnung getRechnung() {
@@ -90,11 +103,11 @@ public class NewRechnung implements Serializable {
 	public void setAllAnschrift(List<RechnungsAnschrift> allAnschrift) {
 		this.allAnschrift = allAnschrift;
 	}
-	
-	
+
 	public List<RechnungsAnschrift> complete(String query) {
-		List<RechnungsAnschrift> list =  allAnschrift.stream().filter(
-				abs -> abs.getDisplayString().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
+		List<RechnungsAnschrift> list = allAnschrift.stream()
+				.filter(abs -> abs.getDisplayString().toLowerCase().contains(query.toLowerCase()))
+				.collect(Collectors.toList());
 		return list;
 	}
 
@@ -121,58 +134,46 @@ public class NewRechnung implements Serializable {
 	public void setSatz(Double satz) {
 		this.satz = satz;
 	}
-	
+
 	public String getPrint() {
 		return this.print;
 	}
-	
+
 	public void addZeile() {
 		RechnungsZeile zeile = new RechnungsZeile();
 		zeile.setMenge(menge);
 		zeile.setSatz(satz);
 		zeile.setBeschreibung(beschreibung);
-		System.out.println(rechnung.getRechnungsZeile().size());
+		zeile.setCmrId(this.rechungsZeileCmr);
 		rechnung.getRechnungsZeile().add(zeile);
-		menge = null;
-		satz = null;
-		beschreibung = null;
-	} 
+	}
+
 	public void removeZeile(RechnungsZeile zeile) {
 		rechnung.getRechnungsZeile().remove(zeile);
-	} 
-	
+	}
+
 	public String downloadFile() {
 
 		HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext()
 				.getResponse();
 		String print = new RechnungsPrinter(rechnung).print();
 		this.print = print;
-//		ServletOutputStream out = null;
-//		try {
-//			out = response.getOutputStream();
-//			out.write(print.getBytes());
-//			out.flush();
-//			FacesContext.getCurrentInstance().getResponseComplete();
-//		} catch (IOException err) {
-//			err.printStackTrace();
-//		} finally {
-//			try {
-//				if (out != null) {
-//					out.close();
-//				}
-//			} catch (IOException err) {
-//				err.printStackTrace();
-//			}
-//		}
 		return "rechnungPrint";
 	}
-	
+
 	public List<Cmr> getAllCmr() {
 		return cmrManager.all();
 	}
-	
+
 	public void setCmrText(Cmr cmr) {
-		this.beschreibung = cmr.getLadungText();
+		String nachOrt = StringUtils.isEmpty(cmr.getEmpfaenger().getLine4()) ? cmr.getEmpfaenger().getLine3()
+				: cmr.getEmpfaenger().getLine4();
+		String vonOrt = StringUtils.isEmpty(cmr.getAbsender().getLine4()) ? cmr.getAbsender().getLine3()
+				: cmr.getAbsender().getLine4();
+
+		this.beschreibung = "T.P am " + cmr.getAbfertigungsDatum() + " " + cmr.getLadungText() + " von " + vonOrt
+				+ " nach: " + nachOrt;
+		this.rechungsZeileCmr = cmr.getId();
 	}
-	
+
 }

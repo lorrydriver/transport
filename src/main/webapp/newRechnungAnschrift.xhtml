@@ -20,6 +20,8 @@
 					<p:inputText value="#{newRechnungAnschrift.anschrift.line3}" />
 					<h:outputText value="Zeile 4:" />
 					<p:inputText value="#{newRechnungAnschrift.anschrift.line4}" />
+					<h:outputText value="UID Nummer:" />
+					<p:inputText value="#{newRechnungAnschrift.anschrift.uid}" />
 					<p:commandButton value="Speichern" action="#{newRechnungAnschrift.save}"
 						update="growl, anschrifts" />
 				</h:panelGrid>

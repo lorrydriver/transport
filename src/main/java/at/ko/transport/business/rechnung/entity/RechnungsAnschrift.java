@@ -29,6 +29,8 @@ public class RechnungsAnschrift {
 	private String line3;
 	private String line4;
 	
+	private String uid;
+	
 	private boolean aktiv;
 	
 	
@@ -85,6 +87,15 @@ public class RechnungsAnschrift {
 		String seperator = ",";
 		return line1+seperator+line2+seperator+line3+seperator+line4;
 	}
+	
+	public String getUid() {
+		return this.uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	
 
 
 }

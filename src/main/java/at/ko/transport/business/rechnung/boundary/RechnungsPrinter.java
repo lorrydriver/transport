@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.velocity.Template;
@@ -41,10 +42,12 @@ public class RechnungsPrinter {
 	    
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 		NumberFormat nf = new DecimalFormat("#.00");
-	    NumberFormat euronf = new DecimalFormat("#.00 \u00A4");
+		
+	    NumberFormat euronf = new DecimalFormat("#,###.00\u00A4");
 		VelocityContext context = new VelocityContext();
 		context.put( "rechnung", this.rechnung );
 		context.put("rechnungsdatum" ,sdf.format(rechnung.getRechnungsdatum()));
+		context.put("faelligam", sdf.format(rechnung.getFaelligAm()));
 		context.put("faelligam", sdf.format(rechnung.getFaelligAm()));
 
 		context.put("euronf", euronf);
