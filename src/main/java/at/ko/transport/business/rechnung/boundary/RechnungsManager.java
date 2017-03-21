@@ -10,7 +10,7 @@ import at.ko.transport.business.rechnung.entity.Rechnung;
 import at.ko.transport.business.rechnung.entity.RechnungsZeile;
 
 @Stateless
-public class RechungsManager {
+public class RechnungsManager {
 
 	@PersistenceContext
 	private EntityManager em;

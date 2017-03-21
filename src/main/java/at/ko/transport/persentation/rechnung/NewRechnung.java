@@ -1,17 +1,11 @@
 package at.ko.transport.persentation.rechnung;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,17 +16,15 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.NumberFormatter;
 
 import org.apache.commons.lang.StringUtils;
 
 import at.ko.transport.business.cmr.boundary.CmrManager;
 import at.ko.transport.business.cmr.entity.Cmr;
 import at.ko.transport.business.rechnung.boundary.RechnungsAnschriftManager;
+import at.ko.transport.business.rechnung.boundary.RechnungsManager;
 import at.ko.transport.business.rechnung.boundary.RechnungsPrinter;
-import at.ko.transport.business.rechnung.boundary.RechungsManager;
 import at.ko.transport.business.rechnung.entity.Rechnung;
 import at.ko.transport.business.rechnung.entity.RechnungsAnschrift;
 import at.ko.transport.business.rechnung.entity.RechnungsZeile;
@@ -48,7 +40,7 @@ public class NewRechnung implements Serializable {
 	@Inject
 	RechnungsAnschriftManager anschriftManager;
 	@Inject
-	RechungsManager rechungsManager;
+	RechnungsManager rechungsManager;
 
 	@Inject
 	CmrManager cmrManager;
