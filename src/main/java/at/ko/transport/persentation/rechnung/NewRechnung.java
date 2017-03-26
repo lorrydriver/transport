@@ -1,17 +1,11 @@
 package at.ko.transport.persentation.rechnung;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,9 +16,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.NumberFormatter;
 
 import org.apache.commons.lang.StringUtils;
 
