@@ -84,6 +84,8 @@
 											
 				<p:commandButton value="Save" action="#{newCmr.save}" update="cmrs"
 						 />
+						 <p:commandButton icon="ui-icon-alert" value="Zurücksetzen"
+					ajax="false" actionListener="#{newCmr.reset()}" update="table" />
 				</h:panelGrid>
 			</h:form>
 			<h:form prependId="false" id = "listFrom" >

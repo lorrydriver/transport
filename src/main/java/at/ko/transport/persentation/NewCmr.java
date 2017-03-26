@@ -2,7 +2,12 @@ package at.ko.transport.persentation;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +26,8 @@ import at.ko.transport.business.cmr.boundary.CmrExporter;
 import at.ko.transport.business.cmr.boundary.CmrManager;
 import at.ko.transport.business.cmr.entity.Cmr;
 import at.ko.transport.business.cmr.entity.CmrAnschrift;
+import at.ko.transport.business.rechnung.entity.Rechnung;
+import at.ko.transport.business.rechnung.entity.RechnungsZeile;
 
 @Model
 public class NewCmr {
@@ -42,6 +49,18 @@ public class NewCmr {
 
 	@PostConstruct
 	public void init() {
+		allAnschrift = manager.all();
+		allCmr = cmrManager.all();
+		this.cmr = new Cmr();
+		this.cmr.setKfzAnhaenger("KR 819 CL");
+		this.cmr.setKfzLkw("KR 747 AJ");
+		this.cmr.setBeladungsOrtLand("AUT");
+		this.cmr.setEntladungsOrtLand("AUT");
+		cmr.setBeladungsDatum(new SimpleDateFormat("dd.MM.yyyy").format(new Date()));
+		cmr.setAbfertigungsDatum(cmr.getBeladungsDatum());
+	}
+	
+	public void reset() {
 		allAnschrift = manager.all();
 		allCmr = cmrManager.all();
 		this.cmr = new Cmr();
