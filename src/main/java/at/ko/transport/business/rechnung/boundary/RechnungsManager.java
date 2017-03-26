@@ -1,5 +1,7 @@
 package at.ko.transport.business.rechnung.boundary;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -10,17 +12,27 @@ import at.ko.transport.business.rechnung.entity.Rechnung;
 import at.ko.transport.business.rechnung.entity.RechnungsZeile;
 
 @Stateless
-public class RechungsManager {
+public class RechnungsManager {
 
 	@PersistenceContext
 	private EntityManager em;
 
 	public void save(Rechnung rechnung) {
-		for (RechnungsZeile zeile : rechnung.getRechnungsZeile()) {
-			em.persist(zeile);
-		}
 		em.persist(rechnung);
 	}
+	
+	
+	public Rechnung load(Rechnung rechnung) {
+		return em.find(Rechnung.class, rechnung.getRechnugsId());
+	}
+	
+	public void update(Rechnung rechnung) {
+		em.merge(rechnung);
+	}
+	
+	public List<Rechnung> getRechnungenByDate() {
+		return em.createNamedQuery(Rechnung.allOrderdByDate,Rechnung.class).getResultList();
+	} 
 
 	public Long calcRechnungsnummer(String rechungsNummerprefix) {
 		try {
@@ -32,5 +44,10 @@ public class RechungsManager {
 			return 1L;
 		}
 	}
+	
+	public List<Long> getAllCmrIds() {
+		return this.em.createNamedQuery(RechnungsZeile.allCmrIds, Long.class).getResultList();
+	}
+			
 
 }

@@ -18,6 +18,7 @@ body {
 	/* line-height: 24px; */
 	font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
 	color: #555;
+	margin-top: -20px;
 }
 
  div.divFooter {
@@ -151,8 +152,11 @@ body {
 							</td>
 							<td/>
 							<td/>
-							<td>Rechung Nr.: $rechnung.rechnungsNummer<br> Datum: $rechnungsdatum<br>
-								Zahlungsziel: 30 Tage.<br>Ihre UID: $rechnung.anschrift.uid
+							<td>Rechnungs Nr.: $rechnung.rechnungsNummer<br> Datum: $rechnungsdatum<br>
+								Zahlungsziel: $rechnung.zahlungsZielTage Tage.<br>
+								#if( $rechnung.anschrift.uid )
+								Ihre UID: $rechnung.anschrift.uid
+								#end
 							</td>
 						</tr>
 					</table>
@@ -187,6 +191,7 @@ body {
 
 				<td>${euronf.format($rechnung.zwischensumme)}</td>
 			</tr>
+			#if( $printUst )
 			<tr class="item last">
 				<td></td>
 				<td></td>
@@ -200,7 +205,7 @@ body {
 				<td>Umsatzsteuer:</td>
 				<td>${euronf.format($rechnung.ust)}</td>
 			</tr>
-
+			#end
 			<tr class="total">
 				<td></td>
 				<td></td>
@@ -208,6 +213,12 @@ body {
 
 				<td>${euronf.format($rechnung.gesamtSumme)}</td>
 			</tr>
+			#if( !$printUst )
+			<tr class="item">
+			<td colspan="4">&Uuml;bergang der Steuerschuld auf den Leistungsempf&auml;nger nach Reverse- Charge- Verfahren. Rechnung ohne MWSt.
+			</td>
+			</tr>
+			#end
 		</table>
 			   <div class="divFooter">
 	   VIELEN DANK F&Uuml;R IHREN AUFTRAG!<br/>

@@ -3,6 +3,7 @@ package at.ko.transport.business.rechnung.entity;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +14,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyTemporal;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -22,8 +25,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@NamedQueries({
+	@NamedQuery(name = Rechnung.allOrderdByDate, query = "SELECT r from Rechnung r order by r.rechnungsdatum desc")
+})
+
 public class Rechnung {
 
+	public final static String allOrderdByDate = "Rechnung_byDate";
 	@Id
 	@GeneratedValue
 	@Column(name = "ID")
@@ -35,7 +43,7 @@ public class Rechnung {
 	@JoinColumn(name = "ANSCHRIFT_ID")
 	private RechnungsAnschrift anschrift;
 
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "RECHNUNG_ZEILE", joinColumns = @JoinColumn(name = "RECHNUNG_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "ZEILE_ID", referencedColumnName = "ID"))
 	private List<RechnungsZeile> rechnungsZeile;
 	
@@ -44,6 +52,10 @@ public class Rechnung {
 	
 	@Temporal(TemporalType.DATE)
 	private Date faelligAm;
+	
+	private Double steuerSatz = 0.2d;
+	
+	private Integer zahlungsZielTage = 30;
 
 	public Double getZwischensumme() {
 		if(rechnungsZeile == null || rechnungsZeile.isEmpty()) {
@@ -57,7 +69,7 @@ public class Rechnung {
 	}
 	
 	public Double getUst() {
-		return getZwischensumme() * 0.2d;
+		return getZwischensumme() * steuerSatz;
 	}
 	
 	public Double getGesamtSumme() {
@@ -112,6 +124,23 @@ public class Rechnung {
 	public void setRechnungsNummer(String rechnungsNummer) {
 		this.rechnungsNummer = rechnungsNummer;
 	}
+
+	public Double getSteuerSatz() {
+		return steuerSatz;
+	}
+
+	public void setSteuerSatz(Double steuerSatz) {
+		this.steuerSatz = steuerSatz;
+	}
+
+	public Integer getZahlungsZielTage() {
+		return zahlungsZielTage;
+	}
+
+	public void setZahlungsZielTage(Integer zahlungsZielTage) {
+		this.zahlungsZielTage = zahlungsZielTage;
+	}
+	
 	
 
 }

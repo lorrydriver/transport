@@ -19,6 +19,7 @@ public class RechnungsPrinterTest {
 	@Before
 	public void setUp() throws Exception {
 		Rechnung rechnung = new Rechnung();
+		rechnung.setRechnungsNummer("17-002");
 		rechnung.setRechnugsId(5l);
 		rechnung.setFaelligAm(new Date());
 		rechnung.setRechnungsdatum(new Date());
@@ -35,8 +36,6 @@ public class RechnungsPrinterTest {
 		rechnung.getRechnungsZeile().add(createZeile());
 		rechnung.getRechnungsZeile().add(createZeile());
 		rechnung.getRechnungsZeile().add(createZeile());
-		
-		
 		cut = new RechnungsPrinter(rechnung);
 	}
 
@@ -51,9 +50,10 @@ public class RechnungsPrinterTest {
 	@Test
 	public void test() {
 		String html = cut.print();
+		assertThat(html, containsString("Umsatzsteuer"));
 		assertThat(html, not(containsString("$item")));
 		assertThat(html, not(containsString("$rechnung")));
-		System.out.println(html);
+		
 	}
 
 }

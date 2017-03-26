@@ -50,6 +50,7 @@ public class RechnungsPrinter {
 		context.put("faelligam", sdf.format(rechnung.getFaelligAm()));
 		context.put("faelligam", sdf.format(rechnung.getFaelligAm()));
 
+		context.put("printUst", !new Double(0.0d).equals(rechnung.getUst()));
 		context.put("euronf", euronf);
 		context.put("nf", nf);
 								

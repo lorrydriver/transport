@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -18,12 +19,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@NamedQuery(name = Cmr.findAllAktiv, query = "SELECT t FROM Cmr t WHERE t.aktiv = true")
+@NamedQueries({
+	@NamedQuery(name = Cmr.findAllAktiv, query = "SELECT t FROM Cmr t WHERE t.aktiv = true"),
+	@NamedQuery(name = Cmr.findAllNotInList, query = "SELECT t FROM Cmr t WHERE t.aktiv = true and t.id NOT IN :"+ Cmr.cmrIds)
+})
 public class Cmr {
 
 	
-	static final String PREFIX = "cmr.entity.Cmr.";
+	static final String PREFIX = "Cmr_";
 	public static final String findAllAktiv = PREFIX + "findAll";
+	public static final String findAllNotInList = PREFIX + "findAllNotInList";
+	public static final String cmrIds = PREFIX + "cmrids";
 	
 	@Id
 	@GeneratedValue

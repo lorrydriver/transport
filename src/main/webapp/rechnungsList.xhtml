@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition template="layout.xhtml">
+
+		<ui:define name="content">
+			<h:form prependId="false">
+				<p:dataTable var="re" value="#{rechnungList.rechnungen}">
+					<p:column filterBy="#{re.rechnungsNummer}"
+						headerText="Rechnungsnummer" 
+						filterMatchMode="contains"
+						 widgetVar="reTable"
+						 >
+						<h:outputText value="#{re.rechnungsNummer}" />
+					</p:column>
+					<p:column filterBy="#{re.rechnungsdatum}"
+						headerText="Rechnungsdatum" 
+						filterMatchMode="contains">
+						<h:outputText value="#{re.rechnungsdatum}" >
+						 <f:convertDateTime pattern="dd.MM.yyyy" />
+						</h:outputText>
+					</p:column>
+				   <p:column filterBy="#{re.anschrift.line1}"
+						headerText="Empf&auml;nger" 
+						filterMatchMode="contains">
+						<h:outputText value="#{re.anschrift.line1}" />
+					</p:column>
+					<p:column headerText="Bearbeiten">
+						<p:commandButton ajax="false" onclick="reTable.clearFilters();" icon="ui-icon-folder-open" action="#{rechnungList.editRechnung(re)}"	>
+						
+						 <f:param name="rechnung" value="#{re.rechnugsId}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
+

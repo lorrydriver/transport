@@ -18,6 +18,7 @@
 			<h:form prependId="false" id="eingabeForm">
 				<p:layout style="min-width:400px;min-height:400px;">
 					<p:layoutUnit position="north">
+					<p:panelGrid columns="2">
 					    <p:outputLabel for="rechnungsDatum" value="Rechnungsdatum:" />
                         <p:calendar id="rechnungsDatum" value="#{newRechnung.rechnung.rechnungsdatum}" showOn="button" />
 						<p:outputLabel for="rechnungsNummer" value="Rechnungsnummer:" />
@@ -28,16 +29,25 @@
 							completeMethod="#{newRechnung.complete}" required="false"
 							var="cmrAbsender" itemLabel="#{cmrAbsender.displayString}"
 							itemValue="#{cmrAbsender.id}"
-							converter="RechnungAnschriftConverter" size="50" >
+							converter="RechnungAnschriftConverter" size="70" >
 
 						</p:autoComplete>
-
+						<p:outputLabel for="steuersatz" value="Steuersatz: " />
+						 <p:selectOneMenu id="steuersatz" value="#{newRechnung.rechnung.steuerSatz}" style="width:125px">
+					            <f:selectItem itemValue="0.2" itemLabel="0,2" />
+					            <f:selectItem itemValue="0.0" itemLabel="0,0" />
+                         </p:selectOneMenu>
+                         <p:outputLabel value="Zahlungsziel Tage:" for="zahlungsziel" />
+                         <p:inputText id="zahlungsziel" value="#{newRechnung.rechnung.zahlungsZielTage}"></p:inputText>
+                         </p:panelGrid>
 					</p:layoutUnit>
 
 					<p:layoutUnit position="west" resizable="true" size="150"
 						minSize="40" maxSize="150">
+				
 						<p:commandButton value="Neue Zeile" type="button"
-							onclick="PF('dlg2').show();" />
+						actionListener="#{newRechnung.newZeile()}"
+							onclick="PF('dlg2').show();" update="zeileDialog"/>
 					</p:layoutUnit>
 
 					<p:layoutUnit position="center">
@@ -64,48 +74,60 @@
 								<p:commandButton icon="ui-icon-trash"
 									actionListener="#{newRechnung.removeZeile(rechnungline)}"
 									update="table" />
+								<p:commandButton icon="ui-icon-folder-open"
+									actionListener="#{newRechnung.editZeile(rechnungline)}"
+									onclick="PF('dlg2').show();" update="zeileDialog"
+									/>								
 							</p:column>
 						</p:dataTable>
 
 					</p:layoutUnit>
 				</p:layout>
-				<p:commandButton icon="ui-icon-disk" value="Speichern"
-					actionListener="#{newRechnung.save()}" udate="table" />
+				<p:commandButton id="save" icon="ui-icon-disk" value="Speichern"
+					actionListener="#{newRechnung.save()}" ajax="false" />
 				<p:commandButton icon="ui-icon-alert" value="Zurücksetzen"
-					ajax="false" actionListener="#{newRechnung.reset()}" udate="table" />
+					ajax="false" actionListener="#{newRechnung.reset()}" update="table" />
 
 			</h:form>
 			<h:form prependId="false">
-				<p:dialog header="Neue Zeile" widgetVar="dlg2" height="600" width="800">
+				<p:dialog id="dg2" header="Neue Zeile" widgetVar="dlg2" height="800" width="800" closable="false">
 					<h:panelGrid columns="2" cellpadding="5" id="zeileDialog">
-						<p:outputLabel for="menge" value="Menge" />
-						<p:inputText id="menge" label="Menge" value="#{newRechnung.menge}"></p:inputText>
-						<p:outputLabel for="satz" value="Satz" />
-						<p:inputText id="satz" label="Satz" value="#{newRechnung.satz}"></p:inputText>
-						<p:outputLabel for="beschreibung" value="Beschreibung" />
-						<p:inputTextarea id="beschreibung" rows="3" cols="46"
-							value="#{newRechnung.beschreibung}" />
 						<p:commandButton icon="ui-icon-plus" id="zeile"
 							update="table,zeileDialog"
 							actionListener="#{newRechnung.addZeile()}" />
-
-						<p:dataList value="#{newRechnung.getAllCmr()}" var="cmr"
+						<p:commandButton icon="ui-icon-close" id="close"
+							update="table,zeileDialog"
+							actionListener="#{newRechnung.newZeile()}"
+							onsuccess="PF('dlg2').hide();" />					
+						<p:outputLabel for="menge" value="Menge" />
+						<p:inputText id="menge" label="Menge" value="#{newRechnung.rechnungsZeile.menge}">
+							<f:convertNumber pattern="###,###" />
+						</p:inputText>
+						<p:outputLabel for="satz" value="Satz" />
+						<p:inputText id="satz" label="Satz" value="#{newRechnung.rechnungsZeile.satz}">
+							<f:convertNumber pattern="###,###" />
+						</p:inputText>
+						<p:outputLabel for="beschreibung" value="Beschreibung" />
+						<p:inputTextarea id="beschreibung" rows="3" cols="46"
+							value="#{newRechnung.rechnungsZeile.beschreibung}" />
+						
+					</h:panelGrid>
+					<p:dataList value="#{newRechnung.getAllCmr()}" var="cmr"
 							type="unordered" itemType="none" paginator="true" rows="10"
-							styleClass="paginated">
+							styleClass="paginated" >
 							<f:facet name="header">
             CMR
         </f:facet>
 							<h:outputText value="#{cmr.ladungText}"
 								style="display:inline-block" />
-							<h:commandButton actionListener="#{newRechnung.setCmrText(cmr)}"
-								ajax="true" value="+" update="@from" />
+							<p:commandButton actionListener="#{newRechnung.setCmrText(cmr)}"
+								ajax="true" value="+" update="beschreibung" />
 						</p:dataList>
-
-					</h:panelGrid>
+					
 				</p:dialog>
 			</h:form>
 			<h:form target="_blank">
-				<p:commandButton ajax="false" value="Drucken"
+				<p:commandButton id="print" ajax="false" disabled="#{!newRechnung.saved}" value="Drucken"
 					action="#{newRechnung.downloadFile()}" />
 			</h:form>
 		</ui:define>

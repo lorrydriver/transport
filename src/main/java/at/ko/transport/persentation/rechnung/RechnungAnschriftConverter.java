@@ -33,11 +33,9 @@ public class RechnungAnschriftConverter implements Converter {
 	public String getAsString(FacesContext fc, UIComponent uic, Object object) {
 		if (object != null) {
 			if(object instanceof RechnungsAnschrift) {
-				return String.valueOf(((RechnungsAnschrift) object).getDisplayString());
+				return String.valueOf(((RechnungsAnschrift)object).getId());
 			}
-			else {
-				return String.valueOf(((Long) object).toString());
-			}
+				return String.valueOf(((Long) object));
 		} else {
 			return null;
 		}

@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,8 +13,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@NamedQueries({
+		@NamedQuery(name = RechnungsZeile.allCmrIds, query = "SELECT rz.cmrId FROM RechnungsZeile rz WHERE rz.cmrId IS NOT NULL") })
 public class RechnungsZeile {
 
+	static final String PREFIX = "rechnung.entity.RechnungsZeile.";
+	public static final String allCmrIds = PREFIX +"allCmrIds";
 	@Id
 	@GeneratedValue
 	@Column(name = "ID")
@@ -20,11 +26,19 @@ public class RechnungsZeile {
 	private String beschreibung;
 	private Double menge;
 	private Double satz;
-	
+
 	private long cmrId;
+
 	
+	public RechnungsZeile() {
+		//TODO: Configuration:
+		this.beschreibung = "T.P. am ";
+		this.menge = 0d;
+		this.satz = 0d;
+	}
+
 	public Double getBetrag() {
-		return menge*satz;
+		return menge * satz;
 	}
 
 	public Long getId() {

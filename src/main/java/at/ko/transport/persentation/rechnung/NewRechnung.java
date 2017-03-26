@@ -32,7 +32,7 @@ import at.ko.transport.business.cmr.boundary.CmrManager;
 import at.ko.transport.business.cmr.entity.Cmr;
 import at.ko.transport.business.rechnung.boundary.RechnungsAnschriftManager;
 import at.ko.transport.business.rechnung.boundary.RechnungsPrinter;
-import at.ko.transport.business.rechnung.boundary.RechungsManager;
+import at.ko.transport.business.rechnung.boundary.RechnungsManager;
 import at.ko.transport.business.rechnung.entity.Rechnung;
 import at.ko.transport.business.rechnung.entity.RechnungsAnschrift;
 import at.ko.transport.business.rechnung.entity.RechnungsZeile;
@@ -48,14 +48,12 @@ public class NewRechnung implements Serializable {
 	@Inject
 	RechnungsAnschriftManager anschriftManager;
 	@Inject
-	RechungsManager rechungsManager;
+	RechnungsManager rechungsManager;
 
 	@Inject
 	CmrManager cmrManager;
 
-	private String beschreibung;
-	private Double menge;
-	private Double satz;
+	private RechnungsZeile rechnungsZeile;
 
 	Rechnung rechnung;
 	List<RechnungsAnschrift> allAnschrift;
@@ -64,17 +62,19 @@ public class NewRechnung implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		reset();
+		if(rechnung == null) {
+		  reset();
+		}
 	}
 
 	public void reset() {
 		allAnschrift = anschriftManager.all();
 		this.rechnung = new Rechnung();
+		this.rechnungsZeile = new RechnungsZeile();
 		this.rechnung.setRechnungsZeile(new ArrayList<>());
 		this.rechnung.setRechnungsdatum(new Date());
 		this.rechnung.setFaelligAm(Date.from(
 				LocalDate.now().plus(1, ChronoUnit.MONTHS).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
-		this.beschreibung = "T.P. am ";
 		this.print = null;
 		String rechungsNummerprefix = new SimpleDateFormat("yy").format(this.rechnung.getRechnungsdatum());
 		String rechnungsNummer = new DecimalFormat("000")
@@ -84,8 +84,11 @@ public class NewRechnung implements Serializable {
 	}
 
 	public void save() {
-		this.rechungsManager.save(this.rechnung);
-		downloadFile();
+		if(this.rechnung.getRechnugsId() == null) {
+			this.rechungsManager.save(this.rechnung);
+		} else {
+			this.rechungsManager.update(rechnung);
+		}
 	}
 
 	public Rechnung getRechnung() {
@@ -111,28 +114,14 @@ public class NewRechnung implements Serializable {
 		return list;
 	}
 
-	public String getBeschreibung() {
-		return beschreibung;
+	
+
+	public RechnungsZeile getRechnungsZeile() {
+		return rechnungsZeile;
 	}
 
-	public void setBeschreibung(String beschreibung) {
-		this.beschreibung = beschreibung;
-	}
-
-	public Double getMenge() {
-		return menge;
-	}
-
-	public void setMenge(Double menge) {
-		this.menge = menge;
-	}
-
-	public Double getSatz() {
-		return satz;
-	}
-
-	public void setSatz(Double satz) {
-		this.satz = satz;
+	public void setRechnungsZeile(RechnungsZeile rechnungsZeile) {
+		this.rechnungsZeile = rechnungsZeile;
 	}
 
 	public String getPrint() {
@@ -140,17 +129,26 @@ public class NewRechnung implements Serializable {
 	}
 
 	public void addZeile() {
-		RechnungsZeile zeile = new RechnungsZeile();
-		zeile.setMenge(menge);
-		zeile.setSatz(satz);
-		zeile.setBeschreibung(beschreibung);
-		zeile.setCmrId(this.rechungsZeileCmr);
-		rechnung.getRechnungsZeile().add(zeile);
+		rechnungsZeile.setCmrId(this.rechungsZeileCmr);
+		if(!rechnung.getRechnungsZeile().contains(this.rechnungsZeile)) {
+			rechnung.getRechnungsZeile().add(rechnungsZeile);
+		}
+		this.rechnungsZeile = new RechnungsZeile();
 	}
 
 	public void removeZeile(RechnungsZeile zeile) {
 		rechnung.getRechnungsZeile().remove(zeile);
 	}
+	
+	public void editZeile(RechnungsZeile zeile) {
+		this.rechnungsZeile = zeile;
+	}
+	
+	public void newZeile() {
+		this.rechnungsZeile = new RechnungsZeile();
+	}
+	
+	
 
 	public String downloadFile() {
 
@@ -162,7 +160,7 @@ public class NewRechnung implements Serializable {
 	}
 
 	public List<Cmr> getAllCmr() {
-		return cmrManager.all();
+		return cmrManager.allAktiv();
 	}
 
 	public void setCmrText(Cmr cmr) {
@@ -171,9 +169,13 @@ public class NewRechnung implements Serializable {
 		String vonOrt = StringUtils.isEmpty(cmr.getAbsender().getLine4()) ? cmr.getAbsender().getLine3()
 				: cmr.getAbsender().getLine4();
 
-		this.beschreibung = "T.P am " + cmr.getAbfertigungsDatum() + " " + cmr.getLadungText() + " von " + vonOrt
-				+ " nach: " + nachOrt;
+		this.rechnungsZeile.setBeschreibung("T.P am " + cmr.getAbfertigungsDatum() + " " + cmr.getLadungText() + " von " + vonOrt
+				+ " nach: " + nachOrt);
 		this.rechungsZeileCmr = cmr.getId();
+	}
+	
+	public boolean isSaved() {
+		return this.rechnung.getRechnugsId() != null;
 	}
 
 }
